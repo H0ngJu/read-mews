@@ -1,3 +1,5 @@
+# [서비스 링크](https://v0-customized-news-app.vercel.app/)
+
 # ✅ 페르소나
 
 **직업:** 대기업 사무직 30대 직장인, 김지훈
