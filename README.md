@@ -1,4 +1,4 @@
-# 📬 Customized News App
+# 📬 read-mews
 
 [서비스 바로가기](https://v0-customized-news-app.vercel.app/)
 
