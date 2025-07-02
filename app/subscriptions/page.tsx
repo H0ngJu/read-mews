@@ -122,9 +122,19 @@ export default function SubscriptionsPage() {
               </Link>
               <h1 className="text-2xl font-bold text-gray-900">구독 관리</h1>
             </div>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="h-4 w-4 mr-2" />새 구독 추가
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Link href="/inbox">
+                <Button variant="outline">
+                  <Mail className="h-4 w-4 mr-2" />
+                  수신함
+                </Button>
+              </Link>
+              <Link href="/subscriptions/add">
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-4 w-4 mr-2" />새 구독 추가
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -284,9 +294,11 @@ export default function SubscriptionsPage() {
               <p className="text-gray-500 mb-4">
                 {searchTerm ? "다른 키워드로 검색해보세요" : "새로운 뉴스레터를 구독해보세요"}
               </p>
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="h-4 w-4 mr-2" />새 구독 추가
-              </Button>
+              <Link href="/subscriptions/add">
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-4 w-4 mr-2" />새 구독 추가
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         )}
