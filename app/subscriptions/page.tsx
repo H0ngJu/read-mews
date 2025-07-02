@@ -164,17 +164,19 @@ export default function SubscriptionsPage() {
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Bell className="h-8 w-8 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">총 수신 메일</p>
-                  <p className="text-2xl font-bold text-gray-900">{totalEmails}개</p>
+          <Link href="/inbox">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <Bell className="h-8 w-8 text-purple-600" />
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">총 수신 메일</p>
+                    <p className="text-2xl font-bold text-gray-900">{totalEmails}개</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Search and Filter */}

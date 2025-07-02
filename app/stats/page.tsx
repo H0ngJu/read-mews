@@ -142,30 +142,30 @@ export default function StatsPage() {
                 <CardDescription>이번 주 뉴스 읽기와 퀴즈 참여 현황</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {weeklyStats.dailyActivity.map((day) => (
-                    <div key={day.day} className="flex items-center space-x-4">
-                      <div className="w-8 text-sm font-medium text-gray-600">{day.day}</div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <div className="flex-1 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-blue-600 h-2 rounded-full"
-                              style={{ width: `${(day.read / maxDailyRead) * 100}%` }}
-                            ></div>
+                <div className="h-64 flex items-end justify-between space-x-2 border-b border-gray-200 pb-4">
+                  {weeklyStats.dailyActivity.map((day, index) => (
+                    <div key={day.day} className="flex flex-col items-center space-y-2 flex-1">
+                      <div className="flex flex-col items-center space-y-1 h-48 justify-end">
+                        {/* 읽은 뉴스 바 */}
+                        <div
+                          className="w-8 bg-blue-600 rounded-t-sm relative group"
+                          style={{ height: `${(day.read / maxDailyRead) * 120}px` }}
+                        >
+                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-gray-700">
+                            {day.read}
                           </div>
-                          <span className="text-sm text-gray-600 w-12">{day.read}개</span>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="flex-1 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-purple-600 h-2 rounded-full"
-                              style={{ width: `${(day.quizzes / maxDailyRead) * 100}%` }}
-                            ></div>
+                        {/* 퀴즈 바 */}
+                        <div
+                          className="w-8 bg-purple-600 rounded-t-sm relative group"
+                          style={{ height: `${(day.quizzes / maxDailyRead) * 120}px` }}
+                        >
+                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-medium text-gray-700">
+                            {day.quizzes}
                           </div>
-                          <span className="text-sm text-gray-600 w-12">{day.quizzes}개</span>
                         </div>
                       </div>
+                      <div className="text-sm font-medium text-gray-600">{day.day}</div>
                     </div>
                   ))}
                 </div>
@@ -285,19 +285,56 @@ export default function StatsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {currentStats.categories.map((category) => (
-                <div key={category.name} className="flex items-center space-x-4">
-                  <div className="w-16 text-sm font-medium text-gray-600">{category.name}</div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <Progress value={category.percentage} className="flex-1 mr-4" />
-                      <span className="text-sm text-gray-600 w-12">{category.count}개</span>
+            <div className="flex items-center justify-center mb-8">
+              <div className="relative w-48 h-48">
+                <svg className="w-48 h-48 transform -rotate-90" viewBox="0 0 100 100">
+                  {currentStats.categories.map((category, index) => {
+                    const startAngle = currentStats.categories
+                      .slice(0, index)
+                      .reduce((sum, cat) => sum + cat.percentage * 3.6, 0)
+                    const endAngle = startAngle + category.percentage * 3.6
+                    const largeArcFlag = category.percentage > 50 ? 1 : 0
+                    const x1 = 50 + 40 * Math.cos((startAngle * Math.PI) / 180)
+                    const y1 = 50 + 40 * Math.sin((startAngle * Math.PI) / 180)
+                    const x2 = 50 + 40 * Math.cos((endAngle * Math.PI) / 180)
+                    const y2 = 50 + 40 * Math.sin((endAngle * Math.PI) / 180)
+
+                    const colors = ["#3b82f6", "#10b981", "#8b5cf6"]
+
+                    return (
+                      <path
+                        key={category.name}
+                        d={`M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArcFlag} 1 ${x2} ${y2} Z`}
+                        fill={colors[index]}
+                        className="hover:opacity-80 transition-opacity"
+                      />
+                    )
+                  })}
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900">{currentStats.totalRead}</div>
+                    <div className="text-sm text-gray-600">총 뉴스</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {currentStats.categories.map((category, index) => {
+                const colors = ["bg-blue-600", "bg-green-600", "bg-purple-600"]
+                return (
+                  <div key={category.name} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                    <div className={`w-4 h-4 rounded-full ${colors[index]}`}></div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">{category.name}</div>
+                      <div className="text-sm text-gray-600">
+                        {category.count}개 ({category.percentage}%)
+                      </div>
                     </div>
                   </div>
-                  <div className="text-sm text-gray-500 w-12">{category.percentage}%</div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </CardContent>
         </Card>

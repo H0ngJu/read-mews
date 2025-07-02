@@ -78,8 +78,7 @@ export default function HomePage() {
   const [news, setNews] = useState(mockNews)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("전체")
-  const [userPoints, setUserPoints] = useState(1250)
-  const [activeTab, setActiveTab] = useState("news")
+  const [activeTab, setActiveTab] = useState("summary")
 
   const categories = ["전체", "경제", "정치", "시사"]
 
@@ -103,9 +102,6 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <h1 className="text-2xl font-bold text-blue-600">NewsHub</h1>
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                {userPoints} 포인트
-              </Badge>
             </div>
             <div className="flex items-center space-x-4">
               <Link href="/subscriptions">
@@ -182,7 +178,7 @@ export default function HomePage() {
                     <div className="flex gap-2">
                       <Button
                         size="sm"
-                        variant="outline"
+                        className="bg-blue-600 hover:bg-blue-700"
                         onClick={() => {
                           setSelectedCategory(summary.category)
                           setActiveTab("news")
@@ -190,7 +186,7 @@ export default function HomePage() {
                       >
                         전체 보기
                       </Button>
-                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                      <Button size="sm" variant="outline">
                         <Brain className="h-4 w-4 mr-1" />
                         퀴즈
                       </Button>
@@ -261,12 +257,12 @@ export default function HomePage() {
                       </div>
                       <div className="flex gap-2">
                         <Link href={`/news/${article.id}`}>
-                          <Button size="sm" variant="outline">
+                          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                             읽기
                           </Button>
                         </Link>
                         <Link href={`/quiz/${article.id}`}>
-                          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                          <Button size="sm" variant="outline">
                             <Brain className="h-4 w-4 mr-1" />
                             퀴즈
                           </Button>
