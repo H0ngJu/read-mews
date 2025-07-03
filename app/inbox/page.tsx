@@ -83,6 +83,22 @@ const mockEmails = [
   },
 ]
 
+// getCategoryColor 함수를 추가합니다
+const getCategoryColor = (category: string) => {
+  switch (category) {
+    case "경제":
+      return "bg-blue-50 text-blue-700 border-blue-200"
+    case "정치":
+      return "bg-green-50 text-green-700 border-green-200"
+    case "시사":
+      return "bg-purple-50 text-purple-700 border-purple-200"
+    case "IT":
+      return "bg-orange-50 text-orange-700 border-orange-200"
+    default:
+      return "bg-gray-50 text-gray-700 border-gray-200"
+  }
+}
+
 export default function InboxPage() {
   const [emails, setEmails] = useState(mockEmails)
   const [searchTerm, setSearchTerm] = useState("")
@@ -250,7 +266,7 @@ export default function InboxPage() {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         <span className={`font-medium ${!email.isRead ? "font-bold" : ""}`}>{email.sender}</span>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className={`text-xs ${getCategoryColor(email.category)}`}>
                           {email.category}
                         </Badge>
                         {email.hasAttachment && (

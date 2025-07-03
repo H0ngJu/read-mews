@@ -6,7 +6,19 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { BookmarkIcon, Clock, TrendingUp, Brain, Search, Settings, Bell, Mail, BarChart3, Users } from "lucide-react"
+import {
+  BookmarkIcon,
+  Clock,
+  TrendingUp,
+  Brain,
+  Search,
+  Settings,
+  Bell,
+  Mail,
+  BarChart3,
+  Users,
+  MessageSquare,
+} from "lucide-react"
 import Link from "next/link"
 
 // Mock data for news articles
@@ -116,6 +128,12 @@ export default function HomePage() {
                   통계
                 </Button>
               </Link>
+              <Link href="/notes">
+                <Button variant="ghost" size="sm">
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  메모
+                </Button>
+              </Link>
               <Link href="/saved">
                 <Button variant="ghost" size="sm">
                   <BookmarkIcon className="h-4 w-4" />
@@ -186,10 +204,12 @@ export default function HomePage() {
                       >
                         전체 보기
                       </Button>
-                      <Button size="sm" variant="outline">
-                        <Brain className="h-4 w-4 mr-1" />
-                        퀴즈
-                      </Button>
+                      <Link href={`/quiz/category/${summary.category.toLowerCase()}`}>
+                        <Button size="sm" variant="outline">
+                          <Brain className="h-4 w-4 mr-1" />
+                          퀴즈
+                        </Button>
+                      </Link>
                     </div>
                   </CardContent>
                 </Card>

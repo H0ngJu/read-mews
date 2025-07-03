@@ -4,9 +4,24 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Star, Archive, Trash2, Reply, Forward, BookmarkIcon, Brain } from "lucide-react"
+import {
+  ArrowLeft,
+  Star,
+  Archive,
+  Trash2,
+  Reply,
+  Forward,
+  BookmarkIcon,
+  Brain,
+  MessageSquare,
+  Send,
+  Lightbulb,
+  Save,
+} from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 const mockEmail = {
   id: 1,
@@ -89,10 +104,80 @@ const mockEmail = {
   `,
 }
 
+// Mock notes data for email
+const mockNotes = [
+  {
+    id: 1,
+    content: "금리 인하가 부동산 투자에 미치는 구체적인 영향을 더 알아봐야겠다.",
+    timestamp: "2024-12-07 15:20",
+    aiResponse: null,
+  },
+  {
+    id: 2,
+    content: "한국은행 금융통화위원회 일정을 확인해보자",
+    timestamp: "2024-12-07 15:22",
+    aiResponse:
+      "한국은행 금융통화위원회는 연 8회 정기적으로 개최되며, 다음 회의는 12월 14일 예정입니다. 주요 안건은 기준금리 결정, 통화정책 방향 설정 등입니다.",
+  },
+]
+
 export default function EmailDetailPage() {
   const params = useParams()
   const [isStarred, setIsStarred] = useState(mockEmail.isStarred)
   const [isSaved, setIsSaved] = useState(false)
+  const [notes, setNotes] = useState(mockNotes)
+  const [newNote, setNewNote] = useState("")
+  const [aiQuestion, setAiQuestion] = useState("")
+  const [isAskingAI, setIsAskingAI] = useState(false)
+  const [showNotes, setShowNotes] = useState(false)
+
+  const handleSaveNote = () => {
+    if (newNote.trim()) {
+      const note = {
+        id: Date.now(),
+        content: newNote,
+        timestamp: new Date().toLocaleString("ko-KR"),
+        aiResponse: null,
+      }
+      setNotes([...notes, note])
+      setNewNote("")
+    }
+  }
+
+  const handleAskAI = async (noteId?: number) => {
+    if (!aiQuestion.trim()) return
+
+    setIsAskingAI(true)
+
+    // Simulate AI response
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    const aiResponse = `이메일 내용을 바탕으로 답변드리겠습니다:
+
+기준금리 인하와 관련하여:
+
+1. **부동산 시장 영향**: 대출 금리 하락으로 주택 구매력 증가, 부동산 가격 상승 압력 예상
+2. **투자 전략**: 금리 인하 시기에는 부동산, 주식 등 실물자산 투자 고려
+3. **리스크 관리**: 부동산 과열 우려와 정부 정책 변화 모니터링 필요
+4. **타이밍**: 금융통화위원회 결정 이후 시장 반응을 지켜본 후 투자 결정 권장
+
+추가 궁금한 점이 있으시면 언제든 질문해주세요.`
+
+    if (noteId) {
+      setNotes(notes.map((note) => (note.id === noteId ? { ...note, aiResponse } : note)))
+    } else {
+      const note = {
+        id: Date.now(),
+        content: aiQuestion,
+        timestamp: new Date().toLocaleString("ko-KR"),
+        aiResponse,
+      }
+      setNotes([...notes, note])
+    }
+
+    setAiQuestion("")
+    setIsAskingAI(false)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -107,6 +192,10 @@ export default function EmailDetailPage() {
               </Button>
             </Link>
             <div className="flex items-center space-x-2">
+              <Button variant={showNotes ? "default" : "ghost"} size="sm" onClick={() => setShowNotes(!showNotes)}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                메모 ({notes.length})
+              </Button>
               <Button variant="ghost" size="sm" onClick={() => setIsStarred(!isStarred)}>
                 <Star className={`h-4 w-4 ${isStarred ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`} />
               </Button>
@@ -124,70 +213,152 @@ export default function EmailDetailPage() {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Email Header */}
-        <Card className="mb-6">
-          <CardHeader>
-            <div className="flex items-center justify-between mb-4">
-              <Badge variant="outline">{mockEmail.category}</Badge>
-              <span className="text-sm text-gray-500">{mockEmail.receivedAt}</span>
-            </div>
-            <CardTitle className="text-2xl font-bold leading-tight mb-2">{mockEmail.subject}</CardTitle>
-            <CardDescription className="flex items-center justify-between">
-              <div>
-                <span className="font-medium">{mockEmail.sender}</span>
-                <span className="text-gray-500 ml-2">&lt;{mockEmail.senderEmail}&gt;</span>
-              </div>
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            {/* Email Header */}
+            <Card className="mb-6">
+              <CardHeader>
+                <div className="flex items-center justify-between mb-4">
+                  <Badge variant="outline">{mockEmail.category}</Badge>
+                  <span className="text-sm text-gray-500">{mockEmail.receivedAt}</span>
+                </div>
+                <CardTitle className="text-2xl font-bold leading-tight mb-2">{mockEmail.subject}</CardTitle>
+                <CardDescription className="flex items-center justify-between">
+                  <div>
+                    <span className="font-medium">{mockEmail.sender}</span>
+                    <span className="text-gray-500 ml-2">&lt;{mockEmail.senderEmail}&gt;</span>
+                  </div>
+                </CardDescription>
+              </CardHeader>
+            </Card>
 
-        {/* Email Content */}
-        <Card className="mb-6">
-          <CardContent className="p-8">
-            <div dangerouslySetInnerHTML={{ __html: mockEmail.content }} />
-          </CardContent>
-        </Card>
+            {/* Email Content */}
+            <Card className="mb-6">
+              <CardContent className="p-8">
+                <div dangerouslySetInnerHTML={{ __html: mockEmail.content }} />
+              </CardContent>
+            </Card>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Button variant="outline">
-            <Reply className="h-4 w-4 mr-2" />
-            답장
-          </Button>
-          <Button variant="outline">
-            <Forward className="h-4 w-4 mr-2" />
-            전달
-          </Button>
-          <Link href={`/quiz/${params.id}`}>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Brain className="h-4 w-4 mr-2" />
-              퀴즈 풀기
-            </Button>
-          </Link>
-        </div>
-
-        {/* Related Actions */}
-        <Card className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">이 뉴스에 대해 더 알아보세요!</h3>
-              <p className="text-gray-600 mb-4">퀴즈를 통해 내용을 정리하고 포인트도 획득하세요.</p>
-              <div className="flex gap-4 justify-center">
-                <Link href={`/quiz/${params.id}`}>
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    <Brain className="h-4 w-4 mr-2" />
-                    퀴즈 시작하기
-                  </Button>
-                </Link>
-                <Button variant="outline" onClick={() => setIsSaved(!isSaved)}>
-                  <BookmarkIcon className="h-4 w-4 mr-2" />
-                  {isSaved ? "저장됨" : "나중에 읽기"}
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Button variant="outline">
+                <Reply className="h-4 w-4 mr-2" />
+                답장
+              </Button>
+              <Button variant="outline">
+                <Forward className="h-4 w-4 mr-2" />
+                전달
+              </Button>
+              <Link href={`/quiz/${params.id}`}>
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Brain className="h-4 w-4 mr-2" />
+                  퀴즈 풀기
                 </Button>
-              </div>
+              </Link>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Related Actions */}
+            <Card className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">이 뉴스에 대해 더 알아보세요!</h3>
+                  <p className="text-gray-600 mb-4">퀴즈를 통해 내용을 정리하고 학습해보세요.</p>
+                  <div className="flex gap-4 justify-center">
+                    <Link href={`/quiz/${params.id}`}>
+                      <Button className="bg-blue-600 hover:bg-blue-700">
+                        <Brain className="h-4 w-4 mr-2" />
+                        퀴즈 시작하기
+                      </Button>
+                    </Link>
+                    <Button variant="outline" onClick={() => setIsSaved(!isSaved)}>
+                      <BookmarkIcon className="h-4 w-4 mr-2" />
+                      {isSaved ? "저장됨" : "나중에 읽기"}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Notes Sidebar */}
+          <div className={`lg:col-span-1 ${showNotes ? "block" : "hidden lg:block"}`}>
+            <Card className="sticky top-24">
+              <CardHeader>
+                <CardTitle className="flex items-center text-lg">
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  메모 & AI 질문
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Add Note */}
+                <div className="space-y-2">
+                  <Textarea
+                    placeholder="이메일에 대한 메모를 작성하세요..."
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    rows={3}
+                  />
+                  <Button onClick={handleSaveNote} size="sm" className="w-full">
+                    <Save className="h-4 w-4 mr-2" />
+                    메모 저장
+                  </Button>
+                </div>
+
+                {/* AI Question */}
+                <div className="border-t pt-4 space-y-2">
+                  <div className="flex items-center text-sm font-medium text-gray-700">
+                    <Lightbulb className="h-4 w-4 mr-1" />
+                    AI에게 질문하기
+                  </div>
+                  <Input
+                    placeholder="이메일 내용에 대해 질문해보세요..."
+                    value={aiQuestion}
+                    onChange={(e) => setAiQuestion(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleAskAI()}
+                  />
+                  <Button onClick={() => handleAskAI()} size="sm" className="w-full" disabled={isAskingAI}>
+                    <Send className="h-4 w-4 mr-2" />
+                    {isAskingAI ? "답변 생성 중..." : "질문하기"}
+                  </Button>
+                </div>
+
+                {/* Notes List */}
+                <div className="border-t pt-4 space-y-3 max-h-96 overflow-y-auto">
+                  {notes.map((note) => (
+                    <div key={note.id} className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-sm text-gray-800 mb-2">{note.content}</p>
+                      <p className="text-xs text-gray-500 mb-2">{note.timestamp}</p>
+
+                      {note.aiResponse && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                          <div className="flex items-center text-xs font-medium text-blue-700 mb-2">
+                            <Lightbulb className="h-3 w-3 mr-1" />
+                            AI 답변
+                          </div>
+                          <p className="text-sm text-blue-800 whitespace-pre-line">{note.aiResponse}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {notes.length === 0 && (
+                    <p className="text-sm text-gray-500 text-center py-4">아직 메모가 없습니다.</p>
+                  )}
+                </div>
+
+                <div className="border-t pt-4">
+                  <Link href="/notes">
+                    <Button variant="outline" size="sm" className="w-full bg-transparent">
+                      모든 메모 보기
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   )
